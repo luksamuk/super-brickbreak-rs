@@ -1,0 +1,9 @@
+[package]
+name = "super-brickbreak-rs"
+version = "0.1.0"
+authors = ["Lucas Vieira <lucasvieira@protonmail.com>"]
+description = "Rust/WASM port of Super BrickBreak."
+
+[dependencies]
+stdweb = "0.3"
+lazy_static = "1.0"
