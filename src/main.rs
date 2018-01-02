@@ -129,6 +129,11 @@ impl World {
         world.paddle_state.spd = world.paddle_state.basespd;
         world.paddle_state.sz = (world.vwpsize.0 as f32 * 0.12,
                                  world.vwpsize.1 as f32 * 0.034723);
+
+        // Just some spare code to actually load the game font. Don't mind it.
+        js! {
+            @{&world.context}.font = (9 * @{&world.canvas}.width / 720) + "px GohuFont";
+        };
         
         world
     }
@@ -360,9 +365,9 @@ fn game_loop(last_call: f64) {
 fn main() {
     stdweb::initialize();
 
-    WORLD.lock().unwrap().draw_box("red",   (20.0, 20.0), (150.0, 100.0));
-    WORLD.lock().unwrap().draw_box("blue",  (40.0, 40.0), (150.0, 100.0));
-    WORLD.lock().unwrap().draw_box("green", (60.0, 60.0), (150.0, 100.0));
+    //WORLD.lock().unwrap().draw_box("red",   (20.0, 20.0), (150.0, 100.0));
+    //WORLD.lock().unwrap().draw_box("blue",  (40.0, 40.0), (150.0, 100.0));
+    //WORLD.lock().unwrap().draw_box("green", (60.0, 60.0), (150.0, 100.0));
 
     // Bind event listeners
     web::window().add_event_listener(|event: KeydownEvent| {
