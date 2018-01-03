@@ -9,6 +9,7 @@ canvas {
     display: block;
     font-family: GohuFont;
     margin: auto;
+    position: fixed;
 }
 
 #load {
