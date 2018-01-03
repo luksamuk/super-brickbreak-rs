@@ -40,6 +40,7 @@ enum KeyType {
     S,
     A,
     Enter,
+    FullScreen,
 //    LMB,
 //    Q,
 }
@@ -86,6 +87,7 @@ struct World {
     context:      stdweb::Value,
     fps:          f64,
     pause:        bool,
+    fullscreen:   bool,
 
     input:        KeyState,
     ball_state:   BallState,
@@ -106,6 +108,9 @@ impl World {
             context:    js!( return @{&canvas}.getContext("2d"); ),
             fps: 0.0,
             pause: false,
+            // Before you say "the document keeps track of fullscreen state":
+            // I already tried using that.
+            fullscreen: false,
             input: KeyState::new(),
             ball_state: BallState {
                 diameter: 0.0,
@@ -125,14 +130,6 @@ impl World {
         
         world.fit_viewport();
         world.paddle_state.xpos = world.vwpsize.0 as f32 / 2.0;
-        world.ball_state.diameter = world.vwpsize.1 as f32 * 0.034723;
-        world.ball_state.basespd = world.vwpsize.1 as f32 / 72.0;
-
-        world.paddle_state.ypos = 11.0 * world.vwpsize.1 as f32 / 12.0;
-        world.paddle_state.basespd = world.vwpsize.1 as f32 / 72.0 * 0.75;
-        world.paddle_state.spd = world.paddle_state.basespd;
-        world.paddle_state.sz = (world.vwpsize.0 as f32 * 0.12,
-                                 world.vwpsize.1 as f32 * 0.034723);
 
         // Just some spare code to actually load the game font. Don't mind it.
         js! {
@@ -177,9 +174,63 @@ impl World {
         };
     }
 
-    fn fit_viewport(&self) {
+    fn fit_viewport(&mut self) {
         js!( @{&self.canvas}.width = @{&self.vwpsize.0};
              @{&self.canvas}.height = @{&self.vwpsize.1}; );
+
+        // Fix some values which are viewport-dependent
+        //self.paddle_state.xpos = self.vwpsize.0 as f32 / 2.0;
+        self.ball_state.diameter = self.vwpsize.1 as f32 * 0.034723;
+        self.ball_state.basespd = self.vwpsize.1 as f32 / 72.0;
+
+        self.paddle_state.ypos = 11.0 * self.vwpsize.1 as f32 / 12.0;
+        self.paddle_state.basespd = self.vwpsize.1 as f32 / 72.0 * 0.75;
+        self.paddle_state.spd = self.paddle_state.basespd;
+        self.paddle_state.sz = (self.vwpsize.0 as f32 * 0.12,
+                                self.vwpsize.1 as f32 * 0.034723);
+
+        // TODO: Also reposition paddle and ball, if we get any problem
+        // coming back from fullscreen
+    }
+
+    // NOTE: This only works in event handlers.
+    fn toggle_fullscreen(&mut self) {
+        let fullscreen_press = {
+            let newstate = match self.input.async.get(&KeyType::FullScreen) {
+                Some(&state) => state,
+                None => false,
+            };
+            let oldstate = match self.input.new.get(&KeyType::FullScreen) {
+                Some(&state) => state,
+                None => false,
+            };
+            newstate && !oldstate
+        };
+        
+        if fullscreen_press {
+            js! {
+                if (typeof document.webkitCancelFullScreen !== "undefined") {
+                    if (@{&self.fullscreen}) {
+                        console.log("Exiting fullscreen mode");
+                        document.webkitCancelFullScreen();
+                    } else {
+                        console.log("Entering fullscreen mode");
+                        @{&self.canvas}.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+                    }
+                } else if (typeof document.mozCancelFullScreen !== "undefined") {
+                    if(@{&self.fullscreen}) {
+                        console.log("Exiting fullscreen mode");
+                        document.mozCancelFullScreen();
+                    } else {
+                        console.log("Entering fullscreen mode");
+                        @{&self.canvas}.mozRequestFullScreen();
+                    }
+                }
+            };
+            self.fullscreen = !self.fullscreen;
+        }
+
+        self.fit_viewport();
     }
 
     fn input_dispatch(&mut self, key: KeyType, pressed: bool) {
@@ -381,6 +432,14 @@ fn on_key(key: &str, _location: KeyboardLocation, pressed: bool) -> bool {
             WORLD.lock().unwrap().input_dispatch(KeyType::A, pressed),
         "Enter" =>
             WORLD.lock().unwrap().input_dispatch(KeyType::Enter, pressed),
+        "F4" => {
+            // Fullscreen toggling can only be done by an user-generated
+            // event, so we have to dispatch the keystate and then check
+            // for keypresses using async vs. new, instead of new vs. old.
+            // It is a hack, but it is also effective
+            WORLD.lock().unwrap().input_dispatch(KeyType::FullScreen, pressed);
+            WORLD.lock().unwrap().toggle_fullscreen();
+        },
         _ => {
             js! { console.log("Key " + @{key} + ", state: " + @{pressed}); };
             return false;
