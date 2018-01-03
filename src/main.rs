@@ -67,6 +67,7 @@ struct BallState {
     spd:      (f32, f32),
     stopped:  bool,
     basespd:  f32,
+    afterimages: Vec<(f32, f32)>,
 }
 
 
@@ -113,11 +114,12 @@ impl World {
             fullscreen: false,
             input: KeyState::new(),
             ball_state: BallState {
-                diameter: 0.0,
-                pos:      (0.0, 0.0),
-                spd:      (0.0, 0.0),
-                stopped:  true,
-                basespd:  0.0,
+                diameter:    0.0,
+                pos:         (0.0, 0.0),
+                spd:         (0.0, 0.0),
+                stopped:     true,
+                basespd:     0.0,
+                afterimages: Vec::with_capacity(7),
             },
             paddle_state: PaddleState {
                 xpos:     0.0,
@@ -321,6 +323,9 @@ impl World {
             if self.ball_state.stopped {
                 self.ball_state.pos.0 = self.paddle_state.xpos;
                 self.ball_state.pos.1 = 21.0 * self.vwpsize.1 as f32 / 24.0;
+                if self.ball_state.afterimages.len() > 0 {
+                    self.ball_state.afterimages.clear();
+                }
             } else {
                 // Transform position
                 self.ball_state.pos.0 += self.ball_state.spd.0;
@@ -375,7 +380,13 @@ impl World {
                         self.ball_state.spd = ( self.ball_state.basespd * f32::cos(theta),
                                                 -self.ball_state.basespd * f32::sin(theta) );
                     }
-            } // End of paddle collision
+
+                // Afterimages
+                if self.ball_state.afterimages.len() >= 7 {
+                    self.ball_state.afterimages.drain(0..1);
+                }
+                self.ball_state.afterimages.push(self.ball_state.pos);
+            } // End of moving ball events
             
         } // End of pausable events
 
@@ -387,8 +398,18 @@ impl World {
     fn render(&self) {
         self.clear();
 
-        // Ball
         let ball_radius = self.ball_state.diameter / 2.0;
+
+        // Afterimages
+        let mut i: u8 = 0;
+        for &afterimage in &self.ball_state.afterimages {
+            let color = format!("#FFFFFF{:02X}", i);
+            let color = color.as_ref();
+            self.draw_circle(color, afterimage, ball_radius);
+            i += 13;
+        }
+        
+        // Actual ball
         self.draw_circle("white", self.ball_state.pos, ball_radius);
         
         // Paddle
