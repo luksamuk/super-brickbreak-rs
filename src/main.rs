@@ -45,15 +45,17 @@ enum KeyType {
 }
 
 struct KeyState {
-    old: HashMap<KeyType, bool>,
-    new: HashMap<KeyType, bool>,
+    async: HashMap<KeyType, bool>,
+    old:   HashMap<KeyType, bool>,
+    new:   HashMap<KeyType, bool>,
 }
 
 impl KeyState {
     fn new() -> KeyState {
         KeyState {
-            old: HashMap::new(),
-            new: HashMap::new(),
+            async: HashMap::new(),
+            old:   HashMap::new(),
+            new:   HashMap::new(),
         }
     }
 }
@@ -83,6 +85,7 @@ struct World {
     vwpsize:      (u32, u32),
     context:      stdweb::Value,
     fps:          f64,
+    pause:        bool,
 
     input:        KeyState,
     ball_state:   BallState,
@@ -102,6 +105,7 @@ impl World {
             },
             context:    js!( return @{&canvas}.getContext("2d"); ),
             fps: 0.0,
+            pause: false,
             input: KeyState::new(),
             ball_state: BallState {
                 diameter: 0.0,
@@ -132,7 +136,7 @@ impl World {
 
         // Just some spare code to actually load the game font. Don't mind it.
         js! {
-            @{&world.context}.font = (9 * @{&world.canvas}.width / 720) + "px GohuFont";
+            @{&world.context}.font = (14 * @{&world.canvas}.width / 720) + "px GohuFont";
         };
         
         world
@@ -179,7 +183,7 @@ impl World {
     }
 
     fn input_dispatch(&mut self, key: KeyType, pressed: bool) {
-        self.input.new.insert(key, pressed);
+        self.input.async.insert(key, pressed);
     }
 
 
@@ -188,13 +192,24 @@ impl World {
 
 
     fn update(&mut self, dt: f64) {
+        // Collect input state
+        self.input.new = self.input.async.clone();
+        
         // Process new input
         for (key, state) in &self.input.new {
             match (key, state) {
-                (&KeyType::Left,  &true) => self.paddle_state.xpos -= self.paddle_state.spd,
-                (&KeyType::Right, &true) => self.paddle_state.xpos += self.paddle_state.spd,
+                (&KeyType::Left,  &true) => {
+                    if !self.pause {
+                        self.paddle_state.xpos -= self.paddle_state.spd;
+                    }
+                },
+                (&KeyType::Right, &true) => {
+                    if !self.pause {
+                        self.paddle_state.xpos += self.paddle_state.spd;
+                    }
+                }
                 (&KeyType::S, &true)     => {
-                    if self.ball_state.stopped == true {
+                    if !self.pause && self.ball_state.stopped == true {
                         // Eh well, something funny was going on with the rand crate, so
                         // what the heck, might as well use js.
                         let initial_angle: f64 = js!( return 67.5 + (Math.random() * 46); )
@@ -216,81 +231,105 @@ impl World {
             }
         }
 
-        // Clamp paddle position
-        let paddle_halfwidth = self.paddle_state.sz.0 / 2.0;
-        let paddle_bounds = (self.paddle_state.xpos - paddle_halfwidth,         // left
-                             self.paddle_state.xpos + paddle_halfwidth,         // right
-                             self.paddle_state.ypos,                            // top
-                             self.paddle_state.ypos + self.paddle_state.sz.1 ); // bottom
-
-        if paddle_bounds.0 < 0.0 {
-            self.paddle_state.xpos = paddle_halfwidth;
-        } else if paddle_bounds.1 > self.vwpsize.0 as f32 {
-            self.paddle_state.xpos = self.vwpsize.0 as f32 - paddle_halfwidth;
-        }
-
-        // Handle ball state
-        if self.ball_state.stopped {
-            self.ball_state.pos.0 = self.paddle_state.xpos;
-            self.ball_state.pos.1 = 21.0 * self.vwpsize.1 as f32 / 24.0;
-        } else {
-            // Transform position
-            self.ball_state.pos.0 += self.ball_state.spd.0;
-            self.ball_state.pos.1 += self.ball_state.spd.1;
-
-            // Handle basic boundary collision
-            let ball_radius = self.ball_state.diameter / 2.0;
-            let ball_boundary = (self.ball_state.pos.0 - ball_radius,   // left
-                                 self.ball_state.pos.0 + ball_radius,   // right
-                                 self.ball_state.pos.1 - ball_radius,   // top
-                                 self.ball_state.pos.1 + ball_radius ); // bottom
-
-            // Handle X axis
-            if ball_boundary.0 < 0.0 && self.ball_state.spd.0 < 0.0 {
-                self.ball_state.pos.0 = ball_radius;
-                self.ball_state.spd.0 *= -1.0;
-            } else if ball_boundary.1 > self.vwpsize.0 as f32 && self.ball_state.spd.0 > 0.0 {
-                self.ball_state.pos.0 = self.vwpsize.0 as f32 - ball_radius;
-                self.ball_state.spd.0 *= -1.0;
-            }
-
-            // Handle Y axis
-            if ball_boundary.2 < 0.0 && self.ball_state.spd.1 < 0.0 {
-                self.ball_state.pos.1 = ball_radius;
-                self.ball_state.spd.1 *= -1.0;
-            } else if ball_boundary.2 > self.vwpsize.1 as f32 && self.ball_state.spd.1 > 0.0 {
-                // Respawn ball
-                self.ball_state.stopped = true;
-            }
-
-            // Handle paddle collision
-            // Check if we're within Y and X range, respectively.
-            if self.ball_state.spd.1 > 0.0 // If we're descending, and...
-                && ((ball_boundary.3 >= paddle_bounds.2) // We're at least intersecting...
-                    && (ball_boundary.3 <= paddle_bounds.3)) // the paddle in any way...
-                // Then we verify if we're within X range...
-                && (ball_boundary.1 >= paddle_bounds.0 && ball_boundary.0 <= paddle_bounds.1) {
-                // We kind of bounce proportionally to the relative paddle position.
-                // The further away from the center of the paddle, the more open the
-                // bouncing angle is, scaling to 0.0 to 45.0 towards the edge.
-                // We first calculate a ratio [-1.0, 1.0], 0.0 being the paddle center.
-                let ratio = (-2.0 * ((self.ball_state.pos.0 - paddle_bounds.0)
-                                     / (paddle_bounds.1 - paddle_bounds.0)))
-                    + 1.0;
-                
-                // We compute the angle by assuming 90 degrees and then adding an angle
-                // in range [-45, 45]
-                let theta: f32 = ((90.0 + (ratio * 45.0)) as f32).to_radians();
-
-                // And now we apply theta to our ball's base speed, distributing it to
-                // the axis
-                self.ball_state.spd = ( self.ball_state.basespd * f32::cos(theta),
-                                       -self.ball_state.basespd * f32::sin(theta) );
+        // Check for single-press of pause key
+        {
+            let enter_press = {
+                let newstate = match self.input.new.get(&KeyType::Enter) {
+                    Some(&state) => state,
+                    None => false,
+                };
+                let oldstate = match self.input.old.get(&KeyType::Enter) {
+                    Some(&state) => state,
+                    None => false,
+                };
+                newstate && !oldstate
+            };
+            
+            if enter_press {
+                self.pause = !self.pause;
             }
         }
+
+        // The following events will only happen if the game is not paused.
+        if !self.pause {
+
+            // Clamp paddle position
+            let paddle_halfwidth = self.paddle_state.sz.0 / 2.0;
+            let paddle_bounds = (self.paddle_state.xpos - paddle_halfwidth,         // left
+                                 self.paddle_state.xpos + paddle_halfwidth,         // right
+                                 self.paddle_state.ypos,                            // top
+                                 self.paddle_state.ypos + self.paddle_state.sz.1 ); // bottom
+
+            if paddle_bounds.0 < 0.0 {
+                self.paddle_state.xpos = paddle_halfwidth;
+            } else if paddle_bounds.1 > self.vwpsize.0 as f32 {
+                self.paddle_state.xpos = self.vwpsize.0 as f32 - paddle_halfwidth;
+            }
+
+            // Handle ball state
+            if self.ball_state.stopped {
+                self.ball_state.pos.0 = self.paddle_state.xpos;
+                self.ball_state.pos.1 = 21.0 * self.vwpsize.1 as f32 / 24.0;
+            } else {
+                // Transform position
+                self.ball_state.pos.0 += self.ball_state.spd.0;
+                self.ball_state.pos.1 += self.ball_state.spd.1;
+
+                // Handle basic boundary collision
+                let ball_radius = self.ball_state.diameter / 2.0;
+                let ball_boundary = (self.ball_state.pos.0 - ball_radius,   // left
+                                     self.ball_state.pos.0 + ball_radius,   // right
+                                     self.ball_state.pos.1 - ball_radius,   // top
+                                     self.ball_state.pos.1 + ball_radius ); // bottom
+
+                // Handle X axis
+                if ball_boundary.0 < 0.0 && self.ball_state.spd.0 < 0.0 {
+                    self.ball_state.pos.0 = ball_radius;
+                    self.ball_state.spd.0 *= -1.0;
+                } else if ball_boundary.1 > self.vwpsize.0 as f32 && self.ball_state.spd.0 > 0.0 {
+                    self.ball_state.pos.0 = self.vwpsize.0 as f32 - ball_radius;
+                    self.ball_state.spd.0 *= -1.0;
+                }
+
+                // Handle Y axis
+                if ball_boundary.2 < 0.0 && self.ball_state.spd.1 < 0.0 {
+                    self.ball_state.pos.1 = ball_radius;
+                    self.ball_state.spd.1 *= -1.0;
+                } else if ball_boundary.2 > self.vwpsize.1 as f32 && self.ball_state.spd.1 > 0.0 {
+                    // Respawn ball
+                    self.ball_state.stopped = true;
+                }
+
+                // Handle paddle collision
+                // Check if we're within Y and X range, respectively.
+                if self.ball_state.spd.1 > 0.0 // If we're descending, and...
+                    && ((ball_boundary.3 >= paddle_bounds.2) // We're at least intersecting...
+                        && (ball_boundary.3 <= paddle_bounds.3)) // the paddle in any way...
+                    // Then we verify if we're within X range...
+                    && (ball_boundary.1 >= paddle_bounds.0 && ball_boundary.0 <= paddle_bounds.1) {
+                        // We kind of bounce proportionally to the relative paddle position.
+                        // The further away from the center of the paddle, the more open the
+                        // bouncing angle is, scaling to 0.0 to 45.0 towards the edge.
+                        // We first calculate a ratio [-1.0, 1.0], 0.0 being the paddle center.
+                        let ratio = (-2.0 * ((self.ball_state.pos.0 - paddle_bounds.0)
+                                             / (paddle_bounds.1 - paddle_bounds.0)))
+                            + 1.0;
+                        
+                        // We compute the angle by assuming 90 degrees and then adding an angle
+                        // in range [-45, 45]
+                        let theta: f32 = ((90.0 + (ratio * 45.0)) as f32).to_radians();
+
+                        // And now we apply theta to our ball's base speed, distributing it to
+                        // the axis
+                        self.ball_state.spd = ( self.ball_state.basespd * f32::cos(theta),
+                                                -self.ball_state.basespd * f32::sin(theta) );
+                    }
+            } // End of paddle collision
+            
+        } // End of pausable events
 
         // Give input to old
-        self.input.old = self.input.new.clone(); // Review this. Could it go bad?
+        self.input.old = self.input.new.clone();
     }
 
 
@@ -311,6 +350,13 @@ impl World {
         self.draw_text("white", "left",
                        (ball_radius, ball_radius + 4.0),
                        format!("FPS: {}", f64::floor(self.fps)).as_ref());
+
+        // Pause text
+        if self.pause {
+            self.draw_text("white", "center",
+                           (self.vwpsize.0 as f32 / 2.0, self.vwpsize.1 as f32 / 2.0),
+                           "PAUSE");
+        }
     }
 }
 
@@ -352,9 +398,14 @@ fn game_loop(last_call: f64) {
     let now: f64 = js!( return Date.now(); ).try_into().unwrap();
     let dt:  f64 = now - last_call;
 
-    WORLD.lock().unwrap().fps = 1000.0f64 / dt;
-    WORLD.lock().unwrap().update(dt);
-    WORLD.lock().unwrap().render();
+    // World handling only on this scope.
+    {
+        let mut world = WORLD.lock().unwrap();
+
+        world.fps = 1000.0f64 / dt;
+        world.update(dt);
+        world.render();
+    }
 
     // Tail recursion. Ha!
     web::window().request_animation_frame( move |_| {
