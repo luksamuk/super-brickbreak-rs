@@ -368,25 +368,25 @@ impl World {
             }
         }
 
-        // Process mobile input
-        {
-            if self.tilt.orient != OrientationType::Unknown {
-                let ratio = self.tilt.new.gamma as f32 *
-                // Make the tilt a little more violent by narrowing
-                // the distance down, depending on orientation
-                    if self.tilt.orient == OrientationType::Portrait {
-                        3.0
-                    } else { 3.5 };
-
-                let halfwidth = self.vwpsize.0 as f32 / 2.0;
-                self.paddle_state.xpos =  halfwidth +  (halfwidth * ratio);
-            }
-        }
-
         // ======
         
         // The following events will only happen if the game is not paused.
         if !self.pause {
+
+            // Process mobile input
+            {
+                if self.tilt.orient != OrientationType::Unknown {
+                    let ratio = self.tilt.new.gamma as f32 *
+                    // Make the tilt a little more violent by narrowing
+                    // the distance down, depending on orientation
+                        if self.tilt.orient == OrientationType::Portrait {
+                            3.0
+                        } else { 3.5 };
+
+                    let halfwidth = self.vwpsize.0 as f32 / 2.0;
+                    self.paddle_state.xpos =  halfwidth +  (halfwidth * ratio);
+                }
+            }
 
             // Clamp paddle position
             let paddle_halfwidth = self.paddle_state.sz.0 / 2.0;

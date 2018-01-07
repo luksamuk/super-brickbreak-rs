@@ -1,6 +1,5 @@
-/target/
+/code/target/
 **/*.rs.bk
-/site/
 *~
 *#*#
 *#*
