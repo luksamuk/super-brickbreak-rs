@@ -70,15 +70,6 @@ if( typeof Rust === 'undefined' ) {
             "__extjs_0bd21f415a09e557f6e24a07d35bd26996f960a5": function($0) {
                 Module.STDWEB.from_js($0, (function(){return 67.5 + (Math.random ()* 46);})());
             },
-            "__extjs_3889a204403e4f6787d35f81036b4dcdc5b43ff6": function($0, $1, $2) {
-                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);Module.STDWEB.from_js($0, (function(){console.log ("Key " + ($1)+ ", state: " + ($2));})());
-            },
-            "__extjs_6e33b5781ef177f98d395307071c5ea678391edb": function($0) {
-                Module.STDWEB.from_js($0, (function(){return Date.now ();})());
-            },
-            "__extjs_d981044b207da12cf98c6e13e67132000918d2a3": function($0, $1, $2, $3, $4, $5, $6, $7, $8, $9) {
-                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);$5 = Module.STDWEB.to_js($5);$6 = Module.STDWEB.to_js($6);$7 = Module.STDWEB.to_js($7);$8 = Module.STDWEB.to_js($8);$9 = Module.STDWEB.to_js($9);Module.STDWEB.from_js($0, (function(){Module.exports.deviceTiltCallback = ($1); Module.exports.deviceTouchCallback = ($2); if (($3). DeviceOrientationEvent){($4). addEventListener ("deviceorientation" , function (e){e.preventDefault (); var abs = 0.0 ; var alpha = 0.0 ; var beta = 0.0 ; var gamma = 0.0 ; abs += e.absolute ; alpha += e.alpha ; beta += e.beta ; gamma += e.gamma ; Module.exports.deviceTiltCallback (abs , alpha , beta , gamma);}, false);}else if (($5). DeviceMotionEvent){($6). addEventListener ("devicemotion" , function (e){e.preventDefault (); var alpha = 0.0 ; var beta = 0.0 ; var gamma = 0.0 ; alpha += e.acceleration.z * 2.0 ; beta += e.acceleration.x * 2.0 ; gamma += e.acceleration.y * 2.0 ; Module.exports.deviceTiltCallback (0.0 , alpha , beta , gamma);}, false);}else {alert ("Sorry, your phone sucks");}if (($7). TouchEvent){($8). addEventListener ("touchstart" , (e)=> {Module.exports.deviceTouchCallback (true);}, false); ($9). addEventListener ("touchend" , (e)=> {Module.exports.deviceTouchCallback (false);}, false);}})());
-            },
             "__extjs_cf8ef57870d176e111428c0ad472311c5c8d5d07": function($0) {
                 Module.STDWEB.from_js($0, (function(){return window ;})());
             },
@@ -124,8 +115,14 @@ if( typeof Rust === 'undefined' ) {
             "__extjs_a316bcb4c088cc4946fb65fe0972e7956d19f38e": function($0, $1, $2, $3) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);Module.STDWEB.from_js($0, (function(){var callback = ($1); var request = ($2). requestAnimationFrame (callback); return {request : request , callback : callback , window : ($3)};})());
             },
-            "__extjs_affd075eaca85f0b8527a09a29f63ea699040bb6": function($0, $1) {
-                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). location ;})());
+            "__extjs_3889a204403e4f6787d35f81036b4dcdc5b43ff6": function($0, $1, $2) {
+                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);Module.STDWEB.from_js($0, (function(){console.log ("Key " + ($1)+ ", state: " + ($2));})());
+            },
+            "__extjs_6e33b5781ef177f98d395307071c5ea678391edb": function($0) {
+                Module.STDWEB.from_js($0, (function(){return Date.now ();})());
+            },
+            "__extjs_0b0957fa3cc35c6c8c25feaf99c45eeacbf1e88b": function($0, $1, $2, $3, $4, $5, $6, $7) {
+                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);$5 = Module.STDWEB.to_js($5);$6 = Module.STDWEB.to_js($6);$7 = Module.STDWEB.to_js($7);Module.STDWEB.from_js($0, (function(){Module.exports.deviceTiltCallback = ($1); Module.exports.deviceTouchCallback = ($2); if (($3). DeviceMotionEvent){($4). addEventListener ("devicemotion" , function (e){e.preventDefault (); var alpha = 0.0 ; var beta = 0.0 ; var gamma = 0.0 ; alpha += e.rotationRate.alpha ; beta += e.rotationRate.beta ; gamma += e.rotationRate.gamma ; Module.exports.deviceTiltCallback (0.0 , alpha , beta , gamma);}, false);}else {alert ("Sorry, your phone sucks");}if (($5). TouchEvent){($6). addEventListener ("touchstart" , (e)=> {Module.exports.deviceTouchCallback (true);}, false); ($7). addEventListener ("touchend" , (e)=> {Module.exports.deviceTouchCallback (false);}, false);}})());
             },
             "__extjs_e9d84225304abfe1f0ac0649a5e9eacd15517749": function($0) {
                 return (Module.STDWEB.acquire_js_reference( $0 ) instanceof KeyboardEvent) | 0;
@@ -139,8 +136,20 @@ if( typeof Rust === 'undefined' ) {
             "__extjs_ff2c75b4783fd5c9d8c934bbd4a03e66527e05e4": function($0) {
                 Module.STDWEB.tmp = Module.STDWEB.to_js( $0 );
             },
+            "__extjs_affd075eaca85f0b8527a09a29f63ea699040bb6": function($0, $1) {
+                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). location ;})());
+            },
+            "Math_atan2": function($0, $1) {
+                return Math.atan( $0, $1 );
+            },
+            "cos": function($0) {
+                return Math.cos( $0 );
+            },
             "cosf": function($0) {
                 return Math.cos( $0 );
+            },
+            "sin": function($0) {
+                return Math.sin( $0 );
             },
             "sinf": function($0) {
                 return Math.sin( $0 );
