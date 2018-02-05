@@ -5,6 +5,7 @@ use stdweb::unstable::TryInto;
 use std::f64::consts;
 
 pub struct BallState {
+    pub sprite:   stdweb::Value,
     pub diameter: f32,
     pub pos:      (f32, f32),
     pub spd:      (f32, f32),
@@ -69,6 +70,11 @@ impl World {
             input: input::KeyState::new(),
             tilt:  input::TiltState::new(),
             ball_state: BallState {
+                sprite:      js! {
+                    var img = new Image();
+                    img.src = "./sphere.png";
+                    return img;
+                },
                 diameter:    0.0,
                 pos:         (0.0, 0.0),
                 spd:         (0.0, 0.0),
@@ -153,6 +159,17 @@ impl World {
             @{&self.context}.fillStyle = @{color};
             @{&self.context}.fill();
             @{&self.context}.closePath();
+        };
+    }
+
+    pub fn draw_sphere(&self, pos: (f32, f32)) {
+        let pos = (pos.0 - (self.ball_state.diameter / 2.0),
+                   pos.1 - (self.ball_state.diameter / 2.0));
+        js! {
+            @{&self.context}.drawImage(@{&self.ball_state.sprite},
+                                       @{pos.0}, @{pos.1},
+                                       @{&self.ball_state.diameter},
+                                       @{&self.ball_state.diameter});
         };
     }
 
@@ -566,11 +583,13 @@ impl World {
             let color = format!("#{:02X}{:02X}{:02X}", i, i, i);
             let color = color.as_ref();
             self.draw_circle(color, afterimage, ball_radius);
+            //self.draw_sphere(color, afterimage);
             i += 13;
         }
         
         // Actual ball
-        self.draw_circle("white", self.ball_state.pos, ball_radius);
+        //self.draw_circle("white", self.ball_state.pos, ball_radius);
+        self.draw_sphere(self.ball_state.pos);
         
         // Paddle
         let paddle_pos = self.paddle_state.xpos - (self.paddle_state.sz.0 / 2.0);

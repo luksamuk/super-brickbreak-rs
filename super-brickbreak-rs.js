@@ -43,6 +43,9 @@ if( typeof Rust === 'undefined' ) {
             "__extjs_a5a563883f23ccc4cbb70c52ca95cd7e9eabb17c": function($0, $1) {
                 $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). getContext ("2d");})());
             },
+            "__extjs_55e6c3e9bbb448e8fa91af21edcd92623cc8a66c": function($0) {
+                Module.STDWEB.from_js($0, (function(){var img = new Image (); img.src = "./sphere.png" ; return img ;})());
+            },
             "__extjs_988e45f9234929e51115534dd4e92d93cb64b62c": function($0) {
                 Module.STDWEB.from_js($0, (function(){var img = new Image (); img.src = "./paddle.png" ; return img ;})());
             },
