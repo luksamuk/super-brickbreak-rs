@@ -15,11 +15,18 @@ pub struct BallState {
 
 
 pub struct PaddleState {
+    pub sprite:   stdweb::Value,
     pub xpos:     f32,
     pub ypos:     f32,
     pub spd:      f32,
     pub sz:       (f32, f32),
     pub basespd:  f32,
+}
+
+pub struct Block {
+    pub pos:    (f32, f32),
+    pub color:  String,
+    pub active: bool,
 }
 
 
@@ -35,6 +42,10 @@ pub struct World {
     pub tilt:         input::TiltState,
     pub ball_state:   BallState,
     pub paddle_state: PaddleState,
+
+    pub block_size:   (f32, f32),
+    pub level_blocks: Vec<Block>,
+    pub collided:     bool,
 }
 
 
@@ -66,12 +77,21 @@ impl World {
                 afterimages: Vec::with_capacity(7),
             },
             paddle_state: PaddleState {
+                sprite:   js! {
+                    var img = new Image();
+                    img.src = "./paddle.png";
+                    return img;
+                },
                 xpos:     0.0,
                 ypos:     0.0,
                 spd:      0.0,
                 basespd:  0.0,
                 sz:       (0.0, 0.0),
             },
+
+            block_size: (0.0, 0.0),
+            level_blocks: vec![],
+            collided: false,
         };
         
         world.fit_viewport();
@@ -81,6 +101,21 @@ impl World {
         js! {
             @{&world.context}.font = (14 * @{&world.canvas}.width / 720) + "px GohuFont";
         };
+
+        // TEST: Create blocks
+        world.block_size = (world.vwpsize.0 as f32 * 0.06,
+                            world.vwpsize.1 as f32 * 0.0520845);
+        for i in 0..9 {
+            for j in 0..9 {
+                let pos = ((world.vwpsize.0 as f32 / 4.0) + (i as f32 * world.block_size.0) as f32,
+                           (world.vwpsize.1 as f32 / 4.0) + (j as f32 * world.block_size.1) as f32);
+                world.level_blocks.push(Block {
+                    pos: pos,
+                    color: "#fff".to_string(),
+                    active: true
+                });
+            }
+        }
         
         world
     }
@@ -102,6 +137,15 @@ impl World {
         };
     }
 
+    pub fn draw_paddle(&self, pos: (f32, f32)) {
+        js! {
+            @{&self.context}.drawImage(@{&self.paddle_state.sprite},
+                                       @{pos.0}, @{pos.1},
+                                       @{&self.paddle_state.sz.0},
+                                       @{&self.paddle_state.sz.1});
+        };
+    }
+
     pub fn draw_circle(&self, color: &str, pos: (f32, f32), radius: f32) {
         js! {
             @{&self.context}.beginPath();
@@ -119,6 +163,65 @@ impl World {
             @{&self.context}.fillText(@{text}, @{pos.0}, @{pos.1});
         };
     }
+
+
+    pub fn draw_tile(&self, color: &str, pos: (f32, f32)) {
+        js! (
+            var ctx = @{&self.context};
+            var pos_x = @{pos.0};
+            var pos_y = @{pos.1};
+            var size_x = @{self.block_size.0} / 2.0;
+            var size_y = @{self.block_size.1} / 2.0;
+            
+            // Upper triangle
+            ctx.beginPath();
+            ctx.moveTo(pos_x - size_x,
+                       pos_y - size_y);
+            ctx.lineTo(pos_x, pos_y);
+            ctx.lineTo(pos_x + size_x,
+                       pos_y - size_y);
+
+            ctx.fillStyle = @{color};
+            ctx.fill();
+            ctx.closePath();
+
+            // Lower triangle
+            ctx.beginPath();
+            ctx.moveTo(pos_x - size_x,
+                       pos_y + size_y);
+            ctx.lineTo(pos_x, pos_y);
+            ctx.lineTo(pos_x + size_x,
+                       pos_y + size_y);
+            ctx.fillStyle = "#666";
+            ctx.fill();
+            ctx.closePath();
+
+            // Left triangle
+            ctx.beginPath();
+            ctx.moveTo(pos_x - size_x,
+                       pos_y - size_y);
+            ctx.lineTo(pos_x, pos_y);
+            ctx.lineTo(pos_x - size_x,
+                       pos_y + size_y);
+            ctx.fillStyle = "#AAA";
+            ctx.fill();
+            ctx.closePath();
+
+            // Right triangle
+            ctx.beginPath();
+            ctx.moveTo(pos_x + size_x,
+                       pos_y - size_y);
+            ctx.lineTo(pos_x, pos_y);
+            ctx.lineTo(pos_x + size_x,
+                       pos_y + size_y);
+            ctx.fillStyle = "#AAA";
+            ctx.fill();
+            ctx.closePath();
+        );
+    }
+
+
+    
 
     pub fn fit_viewport(&mut self) {
         js!( @{&self.canvas}.width = @{&self.vwpsize.0};
@@ -385,6 +488,32 @@ impl World {
                 }
                 self.ball_state.afterimages.push(self.ball_state.pos);
             } // End of moving ball events
+
+
+
+            // Basic collision
+            let ballpos = self.ball_state.pos;
+            let ballradius = self.ball_state.diameter / 2.0;
+            let tilesz = self.block_size;
+
+            self.collided = false;
+
+            // We iterate over all blocks and only
+            // keep those who have not been collided.
+            // This is not the best way to handle collision,
+            // but it's enough for the amount of onscreen objs
+            self.level_blocks.retain(|ref block| {
+                !World::collides(ballpos, ballradius, block.pos,
+                               (block.pos.0 - tilesz.0,
+                                block.pos.0 + tilesz.0,
+                                block.pos.1 - tilesz.1,
+                                block.pos.1 + tilesz.1))
+            });
+
+            // Calculate resulting vector for all collisions and apply
+            // to ball
+            
+            
             
         } // End of pausable events
 
@@ -394,6 +523,36 @@ impl World {
             self.tilt.old = self.tilt.new.clone();
         }
     }
+
+
+
+    fn collides(ball_pos: (f32, f32), ball_radius: f32, tile_pos: (f32, f32),
+                tile_bounds: (f32, f32, f32, f32)) -> bool {
+        // Bounds: (left, right, top, bottom)
+
+        
+        let closest_point = (
+            if ball_pos.0 < tile_pos.0 {
+                ball_pos.0.max(tile_bounds.0)
+            } else {
+                ball_pos.0.min(tile_bounds.1)
+            },
+
+            if ball_pos.1 < tile_pos.1 {
+                ball_pos.1.max(tile_bounds.2)
+            } else {
+                ball_pos.1.min(tile_bounds.3)
+            });
+
+        let delta_pos = ((closest_point.0 - ball_pos.0),
+                         (closest_point.1 - ball_pos.1));
+        let square_distance = (delta_pos.0 * delta_pos.0) + (delta_pos.1 * delta_pos.1);
+        
+        square_distance < ball_radius * ball_radius
+    }
+
+
+    
 
 
     pub fn render(&self) {
@@ -415,9 +574,10 @@ impl World {
         
         // Paddle
         let paddle_pos = self.paddle_state.xpos - (self.paddle_state.sz.0 / 2.0);
-        self.draw_box("white",
-                      (paddle_pos, self.paddle_state.ypos),
-                      self.paddle_state.sz);
+        //self.draw_box("white",
+        //              (paddle_pos, self.paddle_state.ypos),
+        //              self.paddle_state.sz);
+        self.draw_paddle((paddle_pos, self.paddle_state.ypos));
 
         // FPS
         self.draw_text("white", "left",
@@ -430,5 +590,11 @@ impl World {
                            (self.vwpsize.0 as f32 / 2.0, self.vwpsize.1 as f32 / 2.0),
                            "PAUSE");
         }
+
+        // Testing tiles
+        for block in &self.level_blocks {
+            self.draw_tile(block.color.as_ref(), block.pos);
+        }
+        
     }
 }

@@ -2,7 +2,7 @@ name=super-brickbreak-rs
 
 
 
-.PHONY: folder wasm webstart
+.PHONY: folder wasm webstart ../index.html
 
 all: ../index.html ../$(name).wasm
 

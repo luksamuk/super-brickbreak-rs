@@ -43,20 +43,26 @@ if( typeof Rust === 'undefined' ) {
             "__extjs_a5a563883f23ccc4cbb70c52ca95cd7e9eabb17c": function($0, $1) {
                 $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). getContext ("2d");})());
             },
+            "__extjs_988e45f9234929e51115534dd4e92d93cb64b62c": function($0) {
+                Module.STDWEB.from_js($0, (function(){var img = new Image (); img.src = "./paddle.png" ; return img ;})());
+            },
             "__extjs_b284cce5501a85daf64a747ff750fc730ee38c0a": function($0, $1, $2) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);Module.STDWEB.from_js($0, (function(){($1). font = (14 * ($2). width / 720)+ "px GohuFont" ;})());
             },
             "__extjs_25e6f91f4041a3f7e577444323c3218ed8db3aaa": function($0, $1, $2, $3) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);Module.STDWEB.from_js($0, (function(){($1). clearRect (0 , 0 , ($2), ($3));})());
             },
-            "__extjs_72c420ef1a5828676548e3ea615a4ae2eed9e742": function($0, $1, $2, $3, $4, $5, $6, $7, $8, $9) {
-                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);$5 = Module.STDWEB.to_js($5);$6 = Module.STDWEB.to_js($6);$7 = Module.STDWEB.to_js($7);$8 = Module.STDWEB.to_js($8);$9 = Module.STDWEB.to_js($9);Module.STDWEB.from_js($0, (function(){($1). beginPath (); ($2). rect (($3), ($4), ($5), ($6)); ($7). fillStyle = ($8); ($9). fill ();})());
+            "__extjs_1a95850e5a47e94d8c6c14be45be31748ceaf8d0": function($0, $1, $2, $3, $4, $5, $6) {
+                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);$5 = Module.STDWEB.to_js($5);$6 = Module.STDWEB.to_js($6);Module.STDWEB.from_js($0, (function(){($1). drawImage (($2), ($3), ($4), ($5), ($6));})());
             },
             "__extjs_487dbf4f5d76818a09a30013b7c4ac4618041ee7": function($0, $1, $2, $3, $4, $5, $6, $7, $8, $9) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);$5 = Module.STDWEB.to_js($5);$6 = Module.STDWEB.to_js($6);$7 = Module.STDWEB.to_js($7);$8 = Module.STDWEB.to_js($8);$9 = Module.STDWEB.to_js($9);Module.STDWEB.from_js($0, (function(){($1). beginPath (); ($2). arc (($3), ($4), ($5), 0 , Math.PI * 2.0); ($6). fillStyle = ($7); ($8). fill (); ($9). closePath ();})());
             },
             "__extjs_3cb19c4ae669de9b893c5c4ab336b8aa7ca1a522": function($0, $1, $2, $3, $4, $5, $6, $7, $8) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);$5 = Module.STDWEB.to_js($5);$6 = Module.STDWEB.to_js($6);$7 = Module.STDWEB.to_js($7);$8 = Module.STDWEB.to_js($8);Module.STDWEB.from_js($0, (function(){($1). fillStyle = ($2); ($3). textAlign = ($4); ($5). fillText (($6), ($7), ($8));})());
+            },
+            "__extjs_7b22db4c6833c809be11754e05b2228ccdee97ef": function($0, $1, $2, $3, $4, $5, $6) {
+                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);$5 = Module.STDWEB.to_js($5);$6 = Module.STDWEB.to_js($6);Module.STDWEB.from_js($0, (function(){var ctx = ($1); var pos_x = ($2); var pos_y = ($3); var size_x = ($4)/ 2.0 ; var size_y = ($5)/ 2.0 ; ctx.beginPath (); ctx.moveTo (pos_x - size_x , pos_y - size_y); ctx.lineTo (pos_x , pos_y); ctx.lineTo (pos_x + size_x , pos_y - size_y); ctx.fillStyle = ($6); ctx.fill (); ctx.closePath (); ctx.beginPath (); ctx.moveTo (pos_x - size_x , pos_y + size_y); ctx.lineTo (pos_x , pos_y); ctx.lineTo (pos_x + size_x , pos_y + size_y); ctx.fillStyle = "#666" ; ctx.fill (); ctx.closePath (); ctx.beginPath (); ctx.moveTo (pos_x - size_x , pos_y - size_y); ctx.lineTo (pos_x , pos_y); ctx.lineTo (pos_x - size_x , pos_y + size_y); ctx.fillStyle = "#AAA" ; ctx.fill (); ctx.closePath (); ctx.beginPath (); ctx.moveTo (pos_x + size_x , pos_y - size_y); ctx.lineTo (pos_x , pos_y); ctx.lineTo (pos_x + size_x , pos_y + size_y); ctx.fillStyle = "#AAA" ; ctx.fill (); ctx.closePath ();})());
             },
             "__extjs_4074f3126a748dd0531b234a849f421316b7f8fa": function($0, $1, $2, $3, $4) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);Module.STDWEB.from_js($0, (function(){($1). width = ($2); ($3). height = ($4);})());
@@ -124,6 +130,9 @@ if( typeof Rust === 'undefined' ) {
             "__extjs_0b0957fa3cc35c6c8c25feaf99c45eeacbf1e88b": function($0, $1, $2, $3, $4, $5, $6, $7) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);$5 = Module.STDWEB.to_js($5);$6 = Module.STDWEB.to_js($6);$7 = Module.STDWEB.to_js($7);Module.STDWEB.from_js($0, (function(){Module.exports.deviceTiltCallback = ($1); Module.exports.deviceTouchCallback = ($2); if (($3). DeviceMotionEvent){($4). addEventListener ("devicemotion" , function (e){e.preventDefault (); var alpha = 0.0 ; var beta = 0.0 ; var gamma = 0.0 ; alpha += e.rotationRate.alpha ; beta += e.rotationRate.beta ; gamma += e.rotationRate.gamma ; Module.exports.deviceTiltCallback (0.0 , alpha , beta , gamma);}, false);}else {alert ("Sorry, your phone sucks");}if (($5). TouchEvent){($6). addEventListener ("touchstart" , (e)=> {Module.exports.deviceTouchCallback (true);}, false); ($7). addEventListener ("touchend" , (e)=> {Module.exports.deviceTouchCallback (false);}, false);}})());
             },
+            "__extjs_affd075eaca85f0b8527a09a29f63ea699040bb6": function($0, $1) {
+                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). location ;})());
+            },
             "__extjs_e9d84225304abfe1f0ac0649a5e9eacd15517749": function($0) {
                 return (Module.STDWEB.acquire_js_reference( $0 ) instanceof KeyboardEvent) | 0;
             },
@@ -135,9 +144,6 @@ if( typeof Rust === 'undefined' ) {
             },
             "__extjs_ff2c75b4783fd5c9d8c934bbd4a03e66527e05e4": function($0) {
                 Module.STDWEB.tmp = Module.STDWEB.to_js( $0 );
-            },
-            "__extjs_affd075eaca85f0b8527a09a29f63ea699040bb6": function($0, $1) {
-                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). location ;})());
             },
             "Math_atan2": function($0, $1) {
                 return Math.atan( $0, $1 );
