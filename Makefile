@@ -2,7 +2,7 @@ name=super-brickbreak-rs
 basefolder=docs
 
 
-.PHONY: folder wasm webstart $(basefolder)/index.html
+.PHONY: folder wasm webstart clean
 
 all: $(basefolder)/index.html $(basefolder)/$(name).wasm
 
@@ -29,3 +29,7 @@ wasm: src/main.rs
 
 webstart:
 	cargo +nightly web start --target-webasm --release
+
+
+clean:
+	cargo +nightly clean
