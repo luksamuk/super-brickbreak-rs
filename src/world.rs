@@ -31,6 +31,34 @@ pub struct Block {
 }
 
 
+
+#[derive(PartialEq, PartialOrd)]
+pub struct Collision {
+    pub pos:    (f32, f32),
+    pub vector: (f32, f32),
+    pub valid: bool,
+}
+
+impl Collision {
+    fn new() -> Collision {
+        Collision {
+            pos:    (0.0, 0.0),
+            vector: (1.0, 1.0),
+            valid: false,
+        }
+    }
+
+    fn from(position: (f32, f32), vector: (f32, f32)) -> Collision {
+        Collision {
+            pos: position,
+            vector: vector,
+            valid: true,
+        }
+    }
+}
+
+
+
 pub struct World {
     pub canvas:       web::Element,
     pub vwpsize:      (u32, u32),
@@ -519,17 +547,55 @@ impl World {
             // keep those who have not been collided.
             // This is not the best way to handle collision,
             // but it's enough for the amount of onscreen objs
-            self.level_blocks.retain(|ref block| {
-                !World::collides(ballpos, ballradius, block.pos,
-                               (block.pos.0 - tilesz.0,
-                                block.pos.0 + tilesz.0,
-                                block.pos.1 - tilesz.1,
-                                block.pos.1 + tilesz.1))
-            });
+            let mut retrieved_collisions = vec![];
+            {
+                let ballstate = &self.ball_state;
+                self.level_blocks.retain(|ref block| {
+                    let tile_bounds = (block.pos.0 - tilesz.0,
+                                       block.pos.0 + tilesz.0,
+                                       block.pos.1 - tilesz.1,
+                                       block.pos.1 + tilesz.1);
+                    if let Some(collision) = World::collides(ballstate, block.pos, tile_bounds) {
+                        retrieved_collisions.push(collision);
+                        return false;
+                    }
+                    
+                    true
+                });
+            }
 
-            // Calculate resulting vector for all collisions and apply
-            // to ball
+            // Calculate resulting vector
+            let final_collision = retrieved_collisions.iter()
+                .fold(Collision::new(),
+                      |acc, ref val| {
+                          let mut acc = acc;
+                          acc.valid = true;
+                          if acc != **val {
+                              acc.pos = val.pos;
+                              if acc.vector.0 != val.vector.0 {
+                                  acc.vector.0 = val.vector.0;
+                              }
+                              if acc.vector.1 != val.vector.1 {
+                                  acc.vector.1 = val.vector.1;
+                              }
+                          }
+                          acc
+                      });
             
+            // Apply result to ball.
+            // Notice that the resulting vector only ensures that
+            // the ball's speeds have the same signal as the result
+            // vector.
+            if final_collision.valid {
+                let mut ball_spd = self.ball_state.spd;
+                if ball_spd.0.signum() != final_collision.vector.0 {
+                    ball_spd.0 *= -1.0;
+                }
+                if ball_spd.1.signum() != final_collision.vector.1 {
+                    ball_spd.1 *= -1.0;
+                }
+                self.ball_state.spd = ball_spd;
+            }
             
             
         } // End of pausable events
@@ -543,9 +609,11 @@ impl World {
 
 
 
-    fn collides(ball_pos: (f32, f32), ball_radius: f32, tile_pos: (f32, f32),
-                tile_bounds: (f32, f32, f32, f32)) -> bool {
+    fn collides(ball_state: &BallState, tile_pos: (f32, f32),
+                tile_bounds: (f32, f32, f32, f32)) -> Option<Collision> {
         // Bounds: (left, right, top, bottom)
+        let ball_pos = ball_state.pos;
+        let ball_radius = ball_state.diameter / 4.0 as f32;
 
         
         let closest_point = (
@@ -565,7 +633,32 @@ impl World {
                          (closest_point.1 - ball_pos.1));
         let square_distance = (delta_pos.0 * delta_pos.0) + (delta_pos.1 * delta_pos.1);
         
-        square_distance < ball_radius * ball_radius
+        if square_distance < ball_radius * ball_radius {
+            // Calculate vector speed transform.
+            let vector =
+                if ball_pos.0 < tile_pos.0 {
+                    if ball_pos.1 < tile_pos.1 {
+                        // Left + Top
+                        (-1.0, -1.0)
+                    } else {
+                        // Left + Bottom
+                        (-1.0, 1.0)
+                    }
+                } else {
+                    if ball_pos.1 < tile_pos.1 {
+                        // Right + Top
+                        (1.0, -1.0)
+                    } else {
+                        // Right + Bottom
+                        (1.0, 1.0)
+                    }
+                };
+            // TODO: Calculate ball repositioning
+            
+            Some(Collision::from(ball_pos, vector))
+        } else {
+            None
+        }
     }
 
 
