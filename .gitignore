@@ -1,4 +1,4 @@
-/code/target/
+target/
 **/*.rs.bk
 *~
 *#*#
