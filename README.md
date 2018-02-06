@@ -1,6 +1,23 @@
 # SUPER BRICKBREAK - WebAssembly Edition
+by Lucas Vieira (luksamuk)<br/>
+Copyright (c) 2018 Lucas Vieira.
 
-by Lucas Vieira (luksamuk)
-Copyright (c) 2018 Lucas Vieira
+**NOTE: This is a direct port of Super BrickBreak. For the original code -- and for actually playing the game --, check out the [main JavaScript version](https://github.com/luksamuk/SuperBrickBreak).**
 
-This is a direct port of Super BrickBreak. For the original code -- and for actually playing the game --, check out the [main JavaScript version](https://github.com/luksamuk/SuperBrickBreak).
+Fast-paced arkanoid featuring 20+ levels.
+
+*(I plan to add a screenshot here as soon as it is feasible, I swear.)*
+
+
+## About
+	This game is a Rust + WebAssembly port of its JavaScript counterpart, which is also a direct port of its C++ counterpart (found in my MiniGames repo), and part of a collection of mini-games I made in the past.
+	This game was originally written in Processing (Java), ported to C++ (OficinaFramework v1.3/OpenGL 3.1), completely ported to JavaScript using the 2D canvas API, and now, ported to Rust and with most of its logic running under the brand new WebAssembly standard.
+	This game is still a very rough prototype and highly incomplete compared to its JavaScript counterpart. You can [play it on your browser](https://luksamuk.github.io/super-brickbreak-rs), if you want to give it a spin.
+
+## Goal
+	The goal of this port is to make full use of WebAssembly and, while it still needs JavaScript interop for some features missing in the `stdweb` crate, it runs very smoothly.
+
+## Disclaimer and Special Notes
+	Please don't be a douche; do not deliberately steal this code.
+	You can use the code as a reference for your own game, as long as you respect the [license](./LICENSE).
+	This game uses [GohuFont](font.gohu.org) by Hugo Chargois, ported to TTF by [Guilherme Maeda](https://github.com/koemaeda/gohufont-ttf).
