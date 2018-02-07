@@ -27,3 +27,5 @@ This game uses [GohuFont](font.gohu.org) by Hugo Chargois, ported to TTF by [Gui
 - Heads-up display -- 20%
 - Improve collision detection -- 40%
 - Improve overall appearance -- 10%
+- Distribute code in a better way -- 50%
+

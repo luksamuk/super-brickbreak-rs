@@ -130,9 +130,6 @@ if( typeof Rust === 'undefined' ) {
             "__extjs_a316bcb4c088cc4946fb65fe0972e7956d19f38e": function($0, $1, $2, $3) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);Module.STDWEB.from_js($0, (function(){var callback = ($1); var request = ($2). requestAnimationFrame (callback); return {request : request , callback : callback , window : ($3)};})());
             },
-            "__extjs_affd075eaca85f0b8527a09a29f63ea699040bb6": function($0, $1) {
-                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). location ;})());
-            },
             "__extjs_3889a204403e4f6787d35f81036b4dcdc5b43ff6": function($0, $1, $2) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);Module.STDWEB.from_js($0, (function(){console.log ("Key " + ($1)+ ", state: " + ($2));})());
             },
@@ -153,6 +150,9 @@ if( typeof Rust === 'undefined' ) {
             },
             "__extjs_ff2c75b4783fd5c9d8c934bbd4a03e66527e05e4": function($0) {
                 Module.STDWEB.tmp = Module.STDWEB.to_js( $0 );
+            },
+            "__extjs_affd075eaca85f0b8527a09a29f63ea699040bb6": function($0, $1) {
+                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). location ;})());
             },
             "Math_atan2": function($0, $1) {
                 return Math.atan( $0, $1 );
