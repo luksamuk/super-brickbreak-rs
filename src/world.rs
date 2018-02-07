@@ -43,7 +43,7 @@ impl Collision {
     fn new() -> Collision {
         Collision {
             pos:    (0.0, 0.0),
-            vector: (1.0, 1.0),
+            vector: (0.0, 0.0),
             valid: false,
         }
     }
@@ -565,26 +565,24 @@ impl World {
             }
 
             // Calculate resulting vector
+            // Multiblock consensus
             let final_collision = retrieved_collisions.iter()
                 .fold(Collision::new(),
                       |acc, ref val| {
                           let mut acc = acc;
                           acc.valid = true;
-                          if acc != **val {
-                              acc.pos = val.pos;
-                              if (acc.vector.0 != val.vector.0) && (val.vector.0 != 0.0) {
-                                  acc.vector.0 = val.vector.0;
-                              }
-                              if (acc.vector.1 != val.vector.1) && (val.vector.1 != 0.0) {
-                                  acc.vector.1 = val.vector.1;
-                              }
-                          }
+                          acc.vector.0 += val.vector.0;
+                          acc.vector.1 += val.vector.1;
+                          acc.vector.0 = acc.vector.0.signum();
+                          acc.vector.1 = acc.vector.1.signum();
                           acc
                       });
-            /*let final_collision = match retrieved_collisions.first() {
-                Some(collision) => collision.clone(),
-                None => Collision::new(),
-            };*/
+
+            // Single-block "consensus"
+            //let final_collision = match retrieved_collisions.first() {
+            //    Some(collision) => collision.clone(),
+            //    None => Collision::new(),
+            //};
             
             // Apply result to ball.
             // Notice that the resulting vector only ensures that
@@ -592,10 +590,13 @@ impl World {
             // vector.
             if final_collision.valid {
                 let mut ball_spd = self.ball_state.spd;
-                if final_collision.vector.0 != 0.0 && ball_spd.0.signum() != final_collision.vector.0 {
+                //js! { console.log("Final: " + @{format!("{:?}", final_collision.vector)}); }
+                if final_collision.vector.0 != 0.0
+                    && ball_spd.0.signum() != final_collision.vector.0.signum() {
                     ball_spd.0 *= -1.0;
                 }
-                if final_collision.vector.1 != 0.0 && ball_spd.1.signum() != final_collision.vector.1 {
+                if final_collision.vector.1 != 0.0
+                    && ball_spd.1.signum() != final_collision.vector.1.signum() {
                     ball_spd.1 *= -1.0;
                 }
                 self.ball_state.spd = ball_spd;
@@ -703,6 +704,7 @@ impl World {
                     // Top quadrant.
                     // Make ball move up (negative Y)
                     vector.1 = -1.0;
+                    js! { console.log("TOP!"); }
                 },
 
                 // What the heck
@@ -749,21 +751,29 @@ impl World {
         //              self.paddle_state.sz);
         self.draw_paddle((paddle_pos, self.paddle_state.ypos));
 
+        // Testing tiles
+        for block in &self.level_blocks {
+            self.draw_tile(block.color.as_ref(), block.pos);
+        }
+
         // FPS
         self.draw_text("white", "left",
                        (ball_radius, ball_radius + 4.0),
                        format!("FPS: {}", f64::floor(self.fps)).as_ref());
+
+        // Copyright
+        self.draw_text("white", "right",
+                       ((self.vwpsize.0 as f32) - ball_radius, ball_radius + 8.0),
+                       "©2018 Lucas Vieira");
+        self.draw_text("white", "right",
+                       ((self.vwpsize.0 as f32) - ball_radius, (ball_radius * 3.0) + 8.0),
+                       "Prototype Version");
 
         // Pause text
         if self.pause {
             self.draw_text("white", "center",
                            (self.vwpsize.0 as f32 / 2.0, self.vwpsize.1 as f32 / 2.0),
                            "PAUSE");
-        }
-
-        // Testing tiles
-        for block in &self.level_blocks {
-            self.draw_tile(block.color.as_ref(), block.pos);
         }
         
     }

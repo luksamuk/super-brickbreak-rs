@@ -21,3 +21,9 @@ The goal of this port is to make full use of WebAssembly and, while it still nee
 Please don't be a douche; do not deliberately steal this code.
 You can use the code as a reference for your own game, as long as you respect the [license](./LICENSE).
 This game uses [GohuFont](font.gohu.org) by Hugo Chargois, ported to TTF by [Guilherme Maeda](https://github.com/koemaeda/gohufont-ttf).
+
+## To-Do List
+- Basic JavaScript version -- 60%
+- Heads-up display -- 20%
+- Improve collision detection -- 40%
+- Improve overall appearance -- 10%
