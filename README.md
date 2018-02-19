@@ -17,6 +17,15 @@ This game is still a very rough prototype and highly incomplete compared to its 
 ## Goal
 The goal of this port is to make full use of WebAssembly and, while it still needs JavaScript interop for some features missing in the `stdweb` crate, it runs very smoothly.
 
+## Compiling
+
+You *need* Rust Nightly installed in order to build this -- and not only Nightly, but specifically `nightly-2018-01-21`. You can install it by using
+
+	rustup toolchain install nightly-2018-01-21
+	rustup target add wasm32-unknown-unknown
+
+Also, if you're not using `rustup`, please do, before it's too late for your soul.
+
 ## Disclaimer and Special Notes
 Please don't be a douche; do not deliberately steal this code.
 You can use the code as a reference for your own game, as long as you respect the [license](./LICENSE).

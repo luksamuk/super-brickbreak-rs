@@ -21,15 +21,15 @@ $(basefolder)/$(name).wasm: wasm
 
 
 wasm: src/main.rs
-	cargo +nightly web build --target-webasm --release
+	cargo web build --target-webasm --release
 
 
 
 
 
 webstart:
-	cargo +nightly web start --target-webasm --release
+	cargo web start --target-webasm --release
 
 
 clean:
-	cargo +nightly clean
+	cargo clean

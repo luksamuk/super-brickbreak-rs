@@ -139,6 +139,9 @@ fn main() {
     // Device orientation event.
     // Needs to be done in pure JS, since we still don't have Rust
     // bindings...
+    // And oh, this doesn't work properly and might cause bugs on non-Firefox
+    // browsers, of course, so that's why I'm deactivating this.
+    /*
     js! {
         // Expose handler functions
         Module.exports.deviceTiltCallback  = @{on_device_tilt};
@@ -200,7 +203,7 @@ fn main() {
                 Module.exports.deviceTouchCallback(false);
             }, false);
         }
-    };
+    };*/
 
     // This starts game loop by calling it on the
     // next available animation frame
