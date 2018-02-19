@@ -22,7 +22,11 @@ The goal of this port is to make full use of WebAssembly and, while it still nee
 You *need* Rust Nightly installed in order to build this -- and not only Nightly, but specifically `nightly-2018-01-21`. You can install it by using
 
 	rustup toolchain install nightly-2018-01-21
-	rustup target add wasm32-unknown-unknown
+	rustup target add wasm32-unknown-unknown --toolchain nightly
+
+You'll also need `cargo-web` >= 0.6.8:
+
+	cargo install cargo-web
 
 Also, if you're not using `rustup`, please do, before it's too late for your soul.
 

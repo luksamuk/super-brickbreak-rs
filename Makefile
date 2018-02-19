@@ -21,14 +21,14 @@ $(basefolder)/$(name).wasm: wasm
 
 
 wasm: src/main.rs
-	cargo web build --target-webasm --release
+	cargo web build --target wasm32-unknown-unknown --release
 
 
 
 
 
 webstart:
-	cargo web start --target-webasm --release
+	cargo web start --target wasm32-unknown-unknown --release
 
 
 clean:
