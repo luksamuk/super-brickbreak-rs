@@ -1,6 +1,6 @@
 "use strict";
 
-if( typeof Rust === 'undefined' ) {
+if( typeof Rust === "undefined" ) {
     var Rust = {};
 }
 
@@ -10,10 +10,14 @@ if( typeof Rust === 'undefined' ) {
     } else if( typeof module === "object" && module.exports ) {
         module.exports = factory();
     } else {
-        factory();
+        Rust.super_brickbreak_rs = factory();
     }
 }( this, function() {
+    function __initialize( __wasm_module, __load_asynchronously ) {
     const Module = {};
+
+    
+
     let HEAP8 = null;
     let HEAP16 = null;
     let HEAP32 = null;
@@ -23,7 +27,6 @@ if( typeof Rust === 'undefined' ) {
     let HEAPF32 = null;
     let HEAPF64 = null;
 
-    Object.defineProperty( Module, 'nodejs', { value: (typeof window === 'undefined') } );
     Object.defineProperty( Module, 'exports', { value: {} } );
 
     const __imports = {
@@ -48,12 +51,6 @@ if( typeof Rust === 'undefined' ) {
             },
             "__extjs_cf8ef57870d176e111428c0ad472311c5c8d5d07": function($0) {
                 Module.STDWEB.from_js($0, (function(){return window ;})());
-            },
-            "__extjs_d12a8a2eb9b1308d78c85a774baa5ccf56165b6a": function($0) {
-                Module.STDWEB.from_js($0, (function(){return document ;})());
-            },
-            "__extjs_798df3b3e33592ba1fb77845033bc0b4316ce74f": function($0, $1, $2) {
-                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);Module.STDWEB.from_js($0, (function(){return ($1). getElementById (($2));})());
             },
             "__extjs_d0f9580b9cfe82e2ee67d3707e52d87bbabe59f2": function() {
                 Module.STDWEB = {};
@@ -85,41 +82,11 @@ if( typeof Rust === 'undefined' ) {
             "__extjs_20637d8f642203b38c263a5d0f43b9d88ec67c31": function($0, $1, $2) {
                 console.error( 'Panic location:', Module.STDWEB.to_js_string( $0, $1 ) + ':' + $2 );
             },
-            "__extjs_81d99dd180b9769eb1e2b2849590216cf5c21704": function($0, $1, $2, $3) {
-                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);Module.STDWEB.from_js($0, (function(){var listener = ($1); ($2). addEventListener (($3), listener); return listener ;})());
+            "__extjs_d12a8a2eb9b1308d78c85a774baa5ccf56165b6a": function($0) {
+                Module.STDWEB.from_js($0, (function(){return document ;})());
             },
-            "__extjs_a316bcb4c088cc4946fb65fe0972e7956d19f38e": function($0, $1, $2, $3) {
-                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);Module.STDWEB.from_js($0, (function(){var callback = ($1); var request = ($2). requestAnimationFrame (callback); return {request : request , callback : callback , window : ($3)};})());
-            },
-            "__extjs_e9d84225304abfe1f0ac0649a5e9eacd15517749": function($0) {
-                return (Module.STDWEB.acquire_js_reference( $0 ) instanceof KeyboardEvent) | 0;
-            },
-            "__extjs_21ca452112a9fbc71e2e43a589896d83c68b5791": function($0, $1) {
-                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). key ;})());
-            },
-            "__extjs_84c33117bbcdea15c2c7cef1b33f9ea9af612b7d": function($0) {
-                $0 = Module.STDWEB.to_js($0);($0). preventDefault ();
-            },
-            "__extjs_ff2c75b4783fd5c9d8c934bbd4a03e66527e05e4": function($0) {
-                Module.STDWEB.tmp = Module.STDWEB.to_js( $0 );
-            },
-            "__extjs_27f0a383253917b5d9847c58b048d6901f82f1ee": function($0, $1) {
-                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){var img = new Image (); img.src = ($1); return img ;})());
-            },
-            "__extjs_b48dc6da646169d0c0bd81e58fd6ef0dbd0e4a86": function($0) {
-                Module.STDWEB.from_js($0, (function(){console.log ("TOP!");})());
-            },
-            "__extjs_b1d3c33c7d8110448424894db8a7bfabb42e5dfd": function($0, $1) {
-                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){console.log ("Errr, what the heck is going on? Angle is " + ($1));})());
-            },
-            "__extjs_3889a204403e4f6787d35f81036b4dcdc5b43ff6": function($0, $1, $2) {
-                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);Module.STDWEB.from_js($0, (function(){console.log ("Key " + ($1)+ ", state: " + ($2));})());
-            },
-            "__extjs_6e33b5781ef177f98d395307071c5ea678391edb": function($0) {
-                Module.STDWEB.from_js($0, (function(){return Date.now ();})());
-            },
-            "__extjs_affd075eaca85f0b8527a09a29f63ea699040bb6": function($0, $1) {
-                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). location ;})());
+            "__extjs_798df3b3e33592ba1fb77845033bc0b4316ce74f": function($0, $1, $2) {
+                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);Module.STDWEB.from_js($0, (function(){return ($1). getElementById (($2));})());
             },
             "__extjs_a5a563883f23ccc4cbb70c52ca95cd7e9eabb17c": function($0, $1) {
                 $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). getContext ("2d");})());
@@ -148,6 +115,42 @@ if( typeof Rust === 'undefined' ) {
             "__extjs_3cb19c4ae669de9b893c5c4ab336b8aa7ca1a522": function($0, $1, $2, $3, $4, $5, $6, $7, $8) {
                 $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);$4 = Module.STDWEB.to_js($4);$5 = Module.STDWEB.to_js($5);$6 = Module.STDWEB.to_js($6);$7 = Module.STDWEB.to_js($7);$8 = Module.STDWEB.to_js($8);Module.STDWEB.from_js($0, (function(){($1). fillStyle = ($2); ($3). textAlign = ($4); ($5). fillText (($6), ($7), ($8));})());
             },
+            "__extjs_81d99dd180b9769eb1e2b2849590216cf5c21704": function($0, $1, $2, $3) {
+                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);Module.STDWEB.from_js($0, (function(){var listener = ($1); ($2). addEventListener (($3), listener); return listener ;})());
+            },
+            "__extjs_a316bcb4c088cc4946fb65fe0972e7956d19f38e": function($0, $1, $2, $3) {
+                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);$3 = Module.STDWEB.to_js($3);Module.STDWEB.from_js($0, (function(){var callback = ($1); var request = ($2). requestAnimationFrame (callback); return {request : request , callback : callback , window : ($3)};})());
+            },
+            "__extjs_e9d84225304abfe1f0ac0649a5e9eacd15517749": function($0) {
+                return (Module.STDWEB.acquire_js_reference( $0 ) instanceof KeyboardEvent) | 0;
+            },
+            "__extjs_21ca452112a9fbc71e2e43a589896d83c68b5791": function($0, $1) {
+                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). key ;})());
+            },
+            "__extjs_84c33117bbcdea15c2c7cef1b33f9ea9af612b7d": function($0) {
+                $0 = Module.STDWEB.to_js($0);($0). preventDefault ();
+            },
+            "__extjs_ff2c75b4783fd5c9d8c934bbd4a03e66527e05e4": function($0) {
+                Module.STDWEB.tmp = Module.STDWEB.to_js( $0 );
+            },
+            "__extjs_27f0a383253917b5d9847c58b048d6901f82f1ee": function($0, $1) {
+                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){var img = new Image (); img.src = ($1); return img ;})());
+            },
+            "__extjs_3889a204403e4f6787d35f81036b4dcdc5b43ff6": function($0, $1, $2) {
+                $1 = Module.STDWEB.to_js($1);$2 = Module.STDWEB.to_js($2);Module.STDWEB.from_js($0, (function(){console.log ("Key " + ($1)+ ", state: " + ($2));})());
+            },
+            "__extjs_6e33b5781ef177f98d395307071c5ea678391edb": function($0) {
+                Module.STDWEB.from_js($0, (function(){return Date.now ();})());
+            },
+            "__extjs_affd075eaca85f0b8527a09a29f63ea699040bb6": function($0, $1) {
+                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){return ($1). location ;})());
+            },
+            "__extjs_b48dc6da646169d0c0bd81e58fd6ef0dbd0e4a86": function($0) {
+                Module.STDWEB.from_js($0, (function(){console.log ("TOP!");})());
+            },
+            "__extjs_b1d3c33c7d8110448424894db8a7bfabb42e5dfd": function($0, $1) {
+                $1 = Module.STDWEB.to_js($1);Module.STDWEB.from_js($0, (function(){console.log ("Errr, what the heck is going on? Angle is " + ($1));})());
+            },
             "Math_atan2": function($0, $1) {
                 return Math.atan( $0, $1 );
             },
@@ -174,37 +177,21 @@ if( typeof Rust === 'undefined' ) {
         }
     };
 
-    function __load( instance ) {
+    function __instantiate( instance ) {
         Object.defineProperty( Module, 'instance', { value: instance } );
         Object.defineProperty( Module, 'web_malloc', { value: Module.instance.exports.__web_malloc } );
         Object.defineProperty( Module, 'web_free', { value: Module.instance.exports.__web_free } );
         Object.defineProperty( Module, 'web_table', { value: Module.instance.exports.__web_table } );
 
-        if( typeof module !== 'undefined' && module.exports ) {
-            module.exports = Module.exports;
-        } else {
-            Rust.super_brickbreak_rs.exports = Module.exports;
-        }
-
+        
         __imports.env.__web_on_grow();
-        Module.instance.exports.__web_main();
+        Module.instance.exports.main();
     }
 
-    if( Module.nodejs ) {
-        const fs = require( 'fs' );
-        const path = require( 'path' );
-        const wasm_path = path.join( __dirname, "super-brickbreak-rs.wasm" );
-        const buffer = fs.readFileSync( wasm_path );
-        const mod = new WebAssembly.Module( buffer );
-        const instance = new WebAssembly.Instance( mod, __imports );
-        __load( instance );
-        return Module.exports;
-    } else {
-        const __promise = fetch( "super-brickbreak-rs.wasm" )
-            .then( response => response.arrayBuffer() )
-            .then( bytes => WebAssembly.instantiate( bytes, __imports ) )
-            .then( results => {
-                __load( results.instance );
+    if( __load_asynchronously ) {
+        return WebAssembly.instantiate( __wasm_module, __imports )
+            .then( instance => {
+                __instantiate( instance );
                 console.log( "Finished loading Rust wasm module 'super_brickbreak_rs'" );
                 return Module.exports;
             })
@@ -212,8 +199,26 @@ if( typeof Rust === 'undefined' ) {
                 console.log( "Error loading Rust wasm module 'super_brickbreak_rs':", error );
                 throw error;
             });
+    } else {
+        const instance = new WebAssembly.Instance( __wasm_module, __imports );
+        __instantiate( instance );
+        return Module.exports;
+    }
+}
 
-        Rust.super_brickbreak_rs = __promise;
-        return __promise;
+
+    if( typeof window === "undefined" ) {
+        const fs = require( "fs" );
+        const path = require( "path" );
+        const wasm_path = path.join( __dirname, "super-brickbreak-rs.wasm" );
+        const buffer = fs.readFileSync( wasm_path );
+        const mod = new WebAssembly.Module( buffer );
+
+        return __initialize( mod, false );
+    } else {
+        return fetch( "super-brickbreak-rs.wasm" )
+            .then( response => response.arrayBuffer() )
+            .then( bytes => WebAssembly.compile( bytes ) )
+            .then( mod => __initialize( mod, true ) );
     }
 }));
